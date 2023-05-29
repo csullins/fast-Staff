@@ -15,11 +15,11 @@ VALUES  ("Regional Manager", 100000, 1),
 
 INSERT INTO employees(first_name, last_name, role_id, manager_id)
 VALUES  ("Michael", "Scott", 001, 002),
-        ("Jan", "Levinson", 002, 000),
+        ("Jan", "Levinson", 002, NULL),
         ("Jim", "Halpert", 003, 001),
         ("Dwight", "Schrute", 003, 001),
         ("Oscar", "Martinez", 004, 001),
-        ("Angela", "Martin", 004, 008),
+        ("Angela", "Martin", 004, 005),
         ("Pam", "Beesly", 006, 001),
         ("Meredith", "Palmer", 005, 001),
         ("Creed", "Bratton", 005, 001);
