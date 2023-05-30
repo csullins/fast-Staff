@@ -21,138 +21,6 @@ const db = mysql.createConnection(
   console.log(`Connected to the staff_db database.`)
 );
 
-// // Get all departments
-// app.get('/api/departments', (req, res) => {
-//   const sql = `SELECT id, department_name AS department FROM departments`;
-  
-//   db.query(sql, (err, rows) => {
-//     if (err) {
-//       res.status(500).json({ error: err.message });
-//        return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: rows
-//     });
-//   });
-// });
-
-// // Get all roles
-// app.get('/api/roles', (req, res) => {
-//   const sql = `SELECT id, title, salary, department_id FROM roles`;
-  
-//   db.query(sql, (err, rows) => {
-//     if (err) {
-//       res.status(500).json({ error: err.message });
-//        return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: rows
-//     });
-//   });
-// });
-
-// // Get all employees
-// app.get('/api/employees', (req, res) => {
-//   const sql = `SELECT id, first_name, last_name, role_id FROM employees`;
-  
-//   db.query(sql, (err, rows) => {
-//     if (err) {
-//       res.status(500).json({ error: err.message });
-//        return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: rows
-//     });
-//   });
-// });
-
-// // Add a department
-// app.post('/api/new-department', ({ body }, res) => {
-//   const sql = `INSERT INTO departments (department_name)
-//     VALUES (?)`;
-//   const params = [body.department_name];
-  
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.status(400).json({ error: err.message });
-//       return;
-//     }
-//     res.json({
-//       message: 'Department succesfully added.',
-//       data: body
-//     });
-//   });
-// });
-
-// // Add a role
-// app.post('/api/new-role', ({ body }, res) => {
-//   const sql = `INSERT INTO roles (title, salary, department_id)
-//     VALUES (?)`;
-//   const params = [req.body.title, req.body.salary, req.body.department_id];
-  
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.status(400).json({ error: err.message });
-//       return;
-//     }
-//     res.json({
-//       message: 'Role succesfully added.',
-//       data: body
-//     });
-//   });
-// });
-
-// // Add an employee
-// app.post('/api/new-employee', ({ body }, res) => {
-//   const sql = `INSERT INTO employee (first_name, last_name, manager)
-//     VALUES (?)`;
-//   const params = [req.body.first_name, req.body.last_name, req.body.manager_id];
-  
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.status(400).json({ error: err.message });
-//       return;
-//     }
-//     res.json({
-//       message: 'Employee successfully added.',
-//       data: body
-//     });
-//   });
-// });
-
-// // Update employee's role
-// app.put('/api/employees/:id', (req, res) => {
-//   const sql = `UPDATE employees SET role_id = ?  WHERE id = ?`;
-//   const params = [req.body.role_id, req.params.id];
-
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.status(400).json({ error: err.message });
-//     } else if (!result.affectedRows) {
-//       res.json({
-//         message: 'Employee not found'
-//       });
-//     } else {
-//       res.json({
-//         message: 'success',
-//         data: req.body,
-//         changes: result.affectedRows
-//       });
-//     }
-//   });
-// });
-
-// Default response for any other request (Not Found)
-// app.use((req, res) => {
-//   res.status(404).end();
-// });
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
 function userInput() {
        inquirer.prompt([
         {
@@ -162,7 +30,6 @@ function userInput() {
           choices:[
                   "View All Employees",
                   "Add an Employee",
-                  "Update an Employee Role",
                   "View All Roles",
                   "Add a Role",
                   "View All Departments",
@@ -184,20 +51,16 @@ function userInput() {
                 viewAllRoles();
             break;
 
-            case "Add Department":
+            case "Add a Department":
                 addDept();
             break;
 
-            case "Add Role":
+            case "Add a Role":
                 addRole();
             break;
 
-            case "Add Employee":
+            case "Add an Employee":
                 addEmployee();
-            break;
-
-            case "Update Employee Role":
-                updateEmployeeRole();
             break;
 
             case "Exit":
@@ -231,6 +94,7 @@ function userInput() {
           }
         );
       };
+
       function viewAllRoles() {
         db.query(
           "SELECT r.id AS Role_ID, r.title AS Role_Title, d.department_name AS Department, r.salary AS Salary FROM roles r INNER JOIN departments d ON d.id = r.department_id;",
@@ -242,25 +106,165 @@ function userInput() {
           }
         );
       };
+
       function addDept() {
-        prompt.get(["department_name"], function(err, result) {
-          if (err) throw err;
-    
-          // Get the department name from user input
-          const departmentName = result.department_name;
+        inquirer.prompt([
+            {
+              type: "input",
+              name: "department_name",
+              message: "Enter the name of the new department:",
+            },
+          ])
+          .then(function (answers) {
+            // Get the department name from user input
+            const departmentName = answers.department_name;
       
-          // Insert the new department into the departments table
-          db.query(
-            "INSERT INTO departments (department_name) VALUES (?)",
-            [departmentName],
-            function(err, res) {
-              if (err) throw err;
-              console.log(`Department "${departmentName}" added successfully!`);
-              userInput();
-            }
-          );
-        });
+            // Insert the new department into the departments table
+            db.query(
+              "INSERT INTO departments (department_name) VALUES (?)",
+              [departmentName],
+              function (err, res) {
+                if (err) throw err;
+                console.log(` "${departmentName}" department added successfully!`);
+                userInput();
+              }
+            );
+          });
+      }
+
+      async function addRole() {
+
+        const departmentChoices = await getDepartmentChoices(); // Fetch department choices
+
+        inquirer.prompt([
+            {
+              type: "input",
+              name: "title",
+              message: "Enter the title of the new role:",
+            },
+            {
+              type: "number",
+              name: "salary",
+              message: "Enter the salary for the new role:",
+            },
+            {
+              type: "list",
+              name: "department_id",
+              message: "Select the department for the new role:",
+              choices: getDepartmentChoices, // fetch department choices
+            },
+          ])
+          .then (function (answers) {
+            // Get the role data from user input
+            const { title, salary, department_id } = answers;
+      
+            // Insert the new role into the roles table
+            db.query(
+              "INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)",
+              [title, salary, department_id],
+              function (err, res) {
+                if (err) throw err;
+                console.log(`Role "${title}" added successfully!`);
+                userInput();
+              }
+            );
+          });
       }
       
+// Helper function to fetch department choices for inquirer prompt
+function getDepartmentChoices() {
+  return new Promise((resolve, reject) => {
+    db.query("SELECT id, department_name FROM departments", (err, res) => {
+      if (err) {
+        reject(err);
+      } else {
+        const choices = res.map((department) => ({
+          name: department.department_name,
+          value: department.id,
+        }));
+        resolve(choices);
+      }
+    });
+  });
+}
+
+async function addEmployee() {
+  const managerChoices = await getManagerChoices();
+  const roleChoices = await getRoleChoices(); 
+
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "first_name",
+        message: "Enter the employee's first name:",
+      },
+      {
+        type: "input",
+        name: "last_name",
+        message: "Enter the employee's last name:",
+      },
+      {
+        type: "list",
+        name: "role_id",
+        message: "Select the role for the employee:",
+        choices: roleChoices,
+      },
+      {
+        type: "list",
+        name: "manager_id",
+        message: "Select the manager for the employee:",
+        choices: managerChoices,
+      },
+    ])
+    .then(function (answers) {
+      // Get the employee data from user input
+      const { first_name, last_name, role_id, manager_id } = answers;
+
+      // Insert the new employee into the employees table
+      db.query(
+        "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+        [first_name, last_name, role_id, manager_id],
+        function (err, res) {
+          if (err) throw err;
+          console.log(`Employee "${first_name} ${last_name}" added successfully!`);
+          userInput();
+        }
+      );
+    });
+}
+      //  function to fetch role choices for addEmployee prompt
+function getRoleChoices() {
+  return new Promise((resolve, reject) => {
+    db.query("SELECT id, title FROM roles", (err, res) => {
+      if (err) {
+        reject(err);
+      } else {
+        const choices = res.map((role) => ({
+          name: role.title,
+          value: role.id,
+        }));
+        resolve(choices);
+      }
+    });
+  });
+}
+
+//  function to fetch manager choices for addEmployee prompt
+function getManagerChoices() {
+  return new Promise((resolve, reject) => {
+    db.query("SELECT id, CONCAT(first_name, ' ', last_name) AS manager_name FROM employees", (err, res) => {
+      if (err) {
+        reject(err);
+      } else {
+        const choices = res.map((manager) => ({
+          name: manager.manager_name,
+          value: manager.id,
+        }));
+        resolve(choices);
+      }
+    });
+  });
+}
 
       userInput();
