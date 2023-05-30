@@ -1,5 +1,4 @@
 const inquirer = require('inquirer');
-// const inquirerScript = require("./inquirer_script.js");
 const express = require('express');
 const mysql = require('mysql2');
 
